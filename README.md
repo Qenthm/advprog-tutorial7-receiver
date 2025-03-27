@@ -86,4 +86,25 @@ This is the place for you to write reflections:
 
 #### Reflection Subscriber-1
 
+1. **RwLock vs Mutex**:
+   
+   In this tutorial, we use `RwLock<Vec<Notification>>` to synchronize access to our notifications collection. `RwLock` (Read-Write Lock) is necessary because it allows multiple readers to access the data simultaneously, while ensuring exclusive access when writing. This is particularly important for our notification system where:
+   
+   - Reading notifications (listing them) happens frequently and can be done in parallel
+   - Adding new notifications (writing) happens less frequently but needs exclusive access
+   
+   We don't use `Mutex` because it would be less efficient in this scenario. A `Mutex` provides exclusive access for both reading and writing operations, which means only one thread could read the notifications at a time. This would unnecessarily limit performance when multiple concurrent read requests come in, as they would have to wait for each other despite not modifying the data.
+
+2. **Static Variables in Rust vs Java**:
+
+   In Rust, static variables are handled differently from Java due to Rust's ownership and safety principles. In Java, we can freely mutate static variables through static methods without much concern. However, Rust strictly enforces memory safety and prevents data races even with static variables.
+   
+   The key difference is that Rust requires explicit synchronization mechanisms (like `RwLock` or `Mutex`) when modifying static mutable data to guarantee thread safety. This is why we use `lazy_static` combined with `RwLock` - it allows us to:
+   
+   - Have a "static" variable that can be initialized at runtime
+   - Safely mutate its contents across multiple threads
+   - Ensure thread-safe access to the data
+   
+   Without these mechanisms, Rust would not allow mutation of static variables because it could lead to data races and unsafe memory access in a multithreaded environment. This reflects Rust's philosophy of "fearless concurrency" where the compiler enforces thread safety at compile time rather than dealing with concurrency bugs at runtime.
+
 #### Reflection Subscriber-2
