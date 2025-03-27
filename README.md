@@ -108,3 +108,43 @@ This is the place for you to write reflections:
    Without these mechanisms, Rust would not allow mutation of static variables because it could lead to data races and unsafe memory access in a multithreaded environment. This reflects Rust's philosophy of "fearless concurrency" where the compiler enforces thread safety at compile time rather than dealing with concurrency bugs at runtime.
 
 #### Reflection Subscriber-2
+
+1. **Exploring Beyond the Tutorial**:
+
+   Yes, I explored beyond the tutorial steps, particularly `src/lib.rs`. This file serves as the entry point of the application and reveals how the Rocket framework is configured. Through this exploration, I learned about:
+   
+   - How Rocket's fairing system works for attaching additional functionality to the server
+   - How environment variables are loaded and used throughout the application
+   - How the application's architecture is structured with clear separation between controllers, services, and repositories
+   
+   This exploration helped me understand the bigger picture of how a Rust web application is organized and how the Observer pattern is implemented at an architectural level rather than just in isolated components.
+
+2. **Observer Pattern and Scalability**:
+
+   The Observer pattern significantly simplifies adding more subscribers to the system. With our implementation:
+   
+   - Each new Receiver instance can independently subscribe to product types it's interested in
+   - The Publisher (Main app) doesn't need to know anything about new Receivers in advance
+   - Adding a new Receiver is as simple as starting a new instance with its own port and name
+   
+   This decoupling between the subject and observers is the key strength of the pattern.
+   
+   However, scaling the Publisher (Main app) would be more complex. Running multiple instances of the Main app would require:
+   
+   - A shared database for product information across Publisher instances
+   - A mechanism to synchronize subscription lists between Publisher instances
+   - Load balancing for incoming requests
+   
+   The Observer pattern alone doesn't solve this complexity, as it's primarily designed for one-to-many notification systems. For a many-to-many system with multiple Publishers, we would need additional architectural patterns like a message broker or event bus.
+
+3. **Tests and Documentation**:
+
+   I enhanced the Postman collection with detailed examples and descriptions for each endpoint. This proved extremely valuable when testing the application across multiple instances. Documentation helped me:
+   
+   - Remember the purpose and requirements of each endpoint
+   - Understand the expected response formats
+   - Troubleshoot issues by comparing actual vs. expected responses
+   
+   For the tutorial work, having well-documented API calls made it easier to verify the Observer pattern was functioning correctly. For a group project, such documentation would be essential for team members to understand how to interact with the API without needing to review the code.
+   
+   I also wrote simple tests to verify the notification system's behavior under various scenarios. These tests helped catch edge cases early and ensured the notification delivery was reliable across all subscribed instances.
